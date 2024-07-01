@@ -6,8 +6,6 @@ import { useState } from 'react'
 
 const App = () => {
     const [todoList, setTodoList] = useState([
-        { id: 1, name: 'Learning React' },
-        { id: 2, name: 'Watching youtube' },
     ])
 
     const a = 'Eric'
