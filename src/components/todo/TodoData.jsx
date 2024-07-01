@@ -1,5 +1,5 @@
 const TodoData = (props) => {
-    const { name, age, data, todoList } = props
+    const { todoList } = props
 
     console.log(todoList)
 
