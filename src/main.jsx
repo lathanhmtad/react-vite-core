@@ -19,7 +19,7 @@ const router = createBrowserRouter([
     {
         path: "/",
         element: <App />,
-        errorElement: <ErrorPage />, 
+        errorElement: <ErrorPage />,
         children: [
             {
                 index: true,
@@ -42,13 +42,13 @@ const router = createBrowserRouter([
     {
         path: "/register",
         element: <RegisterPage />
-    },
+    }
 
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-        {/* <App /> */}
-        <RouterProvider router={router} />
-    </React.StrictMode>
+    // <React.StrictMode>
+    // {/* <App /> */}
+    <RouterProvider router={router} />
+    // </React.StrictMode>
 )
