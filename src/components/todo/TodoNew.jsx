@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState } from "react"
 
 const TodoNew = (props) => {
 
     // useState hook
-    // const valueInput = "eric";
+    // const valueInput = "eric"
     const [valueInput, setValueInput] = useState("eric")
 
     const { addNewTodo } = props
