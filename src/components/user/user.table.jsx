@@ -15,8 +15,8 @@ const UserTable = (props) => {
     const [isDetailsOpen, setIsDetailsOpen] = useState(false)
 
     const handleDeleteUser = async (id) => {
-        const res= await deleteUserApi(id)
-        if(res.data) {
+        const res = await deleteUserApi(id)
+        if (res.data) {
             notification.success({
                 message: "Delete user",
                 description: "Xóa user thành công"
@@ -91,6 +91,7 @@ const UserTable = (props) => {
             />
 
             <ViewUserDetails
+                loadUser={loadUser}
                 dataDetails={dataDetails}
                 setDataDetails={setDataDetails}
                 isDetailsOpen={isDetailsOpen}

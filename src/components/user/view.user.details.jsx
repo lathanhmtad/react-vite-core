@@ -1,12 +1,65 @@
-import { Button, Drawer } from "antd"
+import { Button, Drawer, notification } from "antd"
+import { useState } from "react"
+import { handleUploadFile, updateUserAvatarApi } from "../../services/apiService"
 
 const ViewUserDetails = (props) => {
+    const [selectedFile, setSelectedFile] = useState(null)
+    const [preview, setPreview] = useState(null)
+
     const {
         dataDetails,
         setDataDetails,
         isDetailsOpen,
-        setIsDetailsOpen
+        setIsDetailsOpen,
+        loadUser
     } = props
+
+    const handleOnChangeFile = e => {
+        console.log("check even ", e)
+        if (!e.target.files || e.target.files.length === 0) {
+            setSelectedFile(null)
+            setPreview(null)
+        }
+
+        const file = e.target.files[0]
+        if (file) {
+            setSelectedFile(file)
+            setPreview(URL.createObjectURL(file))
+        }
+    }
+
+    const handleUpdateUserAvatar = async () => {
+        const resUpload = await handleUploadFile(selectedFile, "avatar")
+
+        if (resUpload.data) {
+            const newAvatar = resUpload.data.fileUploaded
+            const resUpdateAvatar = await updateUserAvatarApi(newAvatar, dataDetails._id,
+                dataDetails.fullName, dataDetails.phone)
+
+            if (resUpdateAvatar.data) {
+                setIsDetailsOpen(false)
+                setSelectedFile(null)
+                setPreview(null)
+                await loadUser()
+
+                notification.success({
+                    message: 'Update user avatar',
+                    description: 'Cập nhập avatar thành công'
+                })
+            } else {
+                notification.error({
+                    message: 'Error Update Avatar',
+                    description: JSON.stringify(resUpdateAvatar.message)
+                })
+            }
+
+        } else {
+            notification.error({
+                message: 'Error Upload file',
+                description: JSON.stringify(resUpload.message)
+            })
+        }
+    }
 
     return (
         <Drawer
@@ -29,9 +82,14 @@ const ViewUserDetails = (props) => {
                 <br />
                 <p>Avatar: </p>
                 <br />
-                <div>
+                <div style={{
+                    marginTop: "10px",
+                    height: "100px",
+                    width: "150px",
+                    border: "1px solid #ccc"
+                }}>
                     <img
-                        height={100} width={150}
+                        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                         src={`${import.meta.env.VITE_BACKEND_URL}/images/avatar/${dataDetails.avatar}`} />
                 </div>
                 <div>
@@ -44,9 +102,29 @@ const ViewUserDetails = (props) => {
                         borderRadius: '5px',
                         cursor: 'pointer'
                     }}>Upload Avatar</label>
-                    <input type="file" id="btnUpload" hidden />
+                    <input
+                        // onChange={handleOnChangeFile}
+                        onChange={e => handleOnChangeFile(e)}
+                        type="file" id="btnUpload" hidden />
                 </div>
-                {/* <Button type="primary" size="large">Upload avatar</Button> */}
+
+                {preview &&
+                    <>
+                        <div style={{
+                            marginTop: "10px",
+                            height: "100px",
+                            marginBottom: "15px",
+                            width: "150px",
+                        }}>
+                            <img
+                                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                                src={preview} />
+                        </div>
+                        <Button
+                            onClick={() => handleUpdateUserAvatar()}
+                            size="large" type="primary">Save</Button>
+                    </>
+                }
             </>
                 :
                 <>
