@@ -1,22 +1,29 @@
 import { Button, Input, Modal, notification } from 'antd'
-import { useState } from 'react'
-import { createUserApi } from '../../services/apiService'
+import { useEffect, useState } from 'react'
+import { createUserApi, updateUserApi } from '../../services/apiService'
 
 const UpdateUserModal = (props) => {
 
     const [fullName, setFullName] = useState("")
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const [id, setId] = useState("")
     const [phone, setPhone] = useState("")
 
-    const {isModalUpdateOpen, setIsModalUpdateOpen, setDataUpdate, dataUpdate} = props
-   
+    const { isModalUpdateOpen, setIsModalUpdateOpen, setDataUpdate, dataUpdate, loadUser } = props
+
+    useEffect(() => {
+        if (dataUpdate) {
+            setId(dataUpdate._id)
+            setFullName(dataUpdate.fullName)
+            setPhone(dataUpdate.phone)
+        }
+    }, [dataUpdate])
+
     const handleSubmit = async () => {
-        const res = await createUserApi(fullName, email, password, phone)
+        const res = await updateUserApi(id, fullName, phone)
         if (res.data) {
             notification.success({
-                message: "create user",
-                description: "Tạo user thành công"
+                message: "Update user",
+                description: "Cập nhập thành công"
             })
             resetAndCloseModal()
             await loadUser()
@@ -29,15 +36,13 @@ const UpdateUserModal = (props) => {
     }
 
     const resetAndCloseModal = () => {
-        setIsModalUpdateOpen(false)   
+        setIsModalUpdateOpen(false)
         setFullName('')
-        setEmail('')
-        setPassword('')
         setPhone('')
+        setId('')
+        setDataUpdate(null)
     }
 
-    console.log(">>>> check dataUpdate", dataUpdate)
-  
     return (
         <Modal
             maskClosable={false}
@@ -48,19 +53,19 @@ const UpdateUserModal = (props) => {
         >
             <div style={{ display: 'flex', gap: "15px", flexDirection: "column" }}>
                 <div>
+                    <span>Id</span>
+                    <Input value={id}
+                        disabled
+                    />
+                </div>
+
+                <div>
                     <span>Full name</span>
                     <Input value={fullName}
                         onChange={e => setFullName(e.target.value)}
                     />
                 </div>
-                <div>
-                    <span>Email</span>
-                    <Input value={email} onChange={e => setEmail(e.target.value)} />
-                </div>
-                <div>
-                    <span>Password</span>
-                    <Input.Password value={password} onChange={e => setPassword(e.target.value)} />
-                </div>
+
                 <div>
                     <span>Phone Number</span>
                     <Input value={phone} onChange={e => setPhone(e.target.value)} />
