@@ -6,7 +6,8 @@ import ViewUserDetails from './view.user.details'
 import { deleteUserApi } from '../../services/apiService'
 
 const UserTable = (props) => {
-    const { dataUsers, loadUser } = props
+    const { dataUsers, loadUser, current,
+        pageSize, total, setCurrent, setPageSize } = props
 
     const [isModalUpdateOpen, setIsModalUpdateOpen] = useState(false)
     const [dataUpdate, setDataUpdate] = useState(null)
@@ -32,6 +33,10 @@ const UserTable = (props) => {
     }
 
     const columns = [
+        {
+            title: "STT",
+            render: (_, record, index) => <div>{(index + 1) + (current - 1) * pageSize}</div>
+        },
         {
             title: 'Id',
             dataIndex: '_id',
@@ -77,9 +82,34 @@ const UserTable = (props) => {
         }
     ]
 
+    const onChange = (pagination) => {
+        if (pagination && pagination.current) {
+            if (+current !== +pagination.current) {
+                setCurrent(+pagination.current)
+            }
+        }
+
+        if (pagination && pagination.pageSize) {
+            if (+pageSize !== +pagination.pageSize) {
+                setPageSize(+pagination.pageSize)
+            }
+        }
+
+    }
+
     return (
         <>
             <Table
+                pagination={
+                    {
+                        current: current,
+                        pageSize: pageSize,
+                        total: total,
+                        showSizeChanger: true,
+                        // showTotal: (total, range) => {}
+                    }
+                }
+                onChange={onChange}
                 rowKey="_id"
                 columns={columns} dataSource={dataUsers} />
             <UpdateUserModal
